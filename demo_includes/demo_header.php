@@ -6,7 +6,7 @@
 //php wrappers here
 
 
-function build_modal4($id = "exampleModal", $buttonLabel = "boton modal" , $title = "titulo", $content = "content", $buttonAction = "alert('working');" , $extrabutton = false, $preloadAction = false){
+function build_modal($id = "exampleModal", $buttonLabel = "boton modal" , $title = "titulo", $content = "content", $buttonAction = "alert('working');" , $extrabutton = false, $preloadAction = false){
 	
 	?>
 	<script>
@@ -68,7 +68,7 @@ function build_modal4($id = "exampleModal", $buttonLabel = "boton modal" , $titl
 	<link rel="stylesheet" href="http://localhost/hsfjsys/includes/js2020/font-awesome.min.css">
 	<link rel="stylesheet" href="http://localhost/hsfjsys/includes/js2020/style.css">
 	<link rel="stylesheet" href="http://localhost/hsfjsys/includes/nav4/nav4.css">
-	 <script src="http://localhost/hsfjsys/includes/bootstrap4/popper.js"></script>
+	 
 	 
 	<script src="http://localhost/hsfjsys/includes/nav4/nav4.js"></script>
 	 
@@ -88,7 +88,7 @@ function build_modal4($id = "exampleModal", $buttonLabel = "boton modal" , $titl
 
 
 <script src="demo_includes/jquery/jquery.js" ></script>
-  
+  <script src="demo_includes/bootstrap4/popper.js"></script>
 <link rel="stylesheet" href="demo_includes/bootstrap4/bootstrap.min.css">
     <script src="demo_includes/bootstrap4/bootstrap.min.js"></script>
 	

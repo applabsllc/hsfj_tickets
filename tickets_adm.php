@@ -1,12 +1,45 @@
 <?php
 	
-	include("demo_config.php");
-	include("demo_header.php");
+	include("demo_includes/demo_config.php");
+	include("demo_includes/demo_header.php");
 	
 
-	///actions/////
+//definir personal
+$devs = Array();
+$devs[0] = "Andres";
+$devs[1] = "Hector";
+$devs[2] = "Pedro";
+
+$statuses = Array();
+$statuses[0] = "Planeaci&oacute;n";
+$statuses[1] = "Disponibles";
+$statuses[2] = "En Proceso";
+$statuses[3] = "Por Revisar ( PR )";
+$statuses[4] = "Aprobado";
+$statuses[5] = "Terminado";
+
+//definir prioridades
+$prioritys = Array();
+$prioritys[25] = "Baja";
+$prioritys[50] = "Media";
+$prioritys[75] = "Alta";
+$prioritys[100] = "Urgente";
+
+//definir deptos
+$deptos = Array();
+
+$query = "SELECT id,nombre FROM tickets_adm_deptos ORDER BY nombre";
+$res = mysql_query($query);
+while($row = mysql_fetch_assoc($res)){
+	
+	$deptos[$row["id"]] = $row["nombre"];
+	
+}
 
 
+
+	$esPersonal = true;
+	$esEncargado = true;
 $fpath=$file_path;
 
 if($action == "saveChanges"){
@@ -272,52 +305,6 @@ function clear_str_acentos($str){
 
 	}
 
-function usuario_es_personal(){
-	GLOBAL $Usuario;
-	// var_dump($Usuario);
-	$query = "SELECT u.idpersonal, p.puesto
-		FROM usuarios as u 
-		LEFT JOIN personal as p
-		ON p.id = u.idpersonal
-		WHERE u.nombre = '$Usuario'
-		LIMIT 1";
-		//die($query);
-	$res = mysql_query($query);
-	while($row = mysql_fetch_assoc($res)){
-		$position = intval($row["puesto"]);
-		//die( var_dump($row["puesto"]));
-		
-	}
-	if($position == 31 || $position == 32 || $position == 68 || $position == 4){
-		return true;
-	}else{
-		return false;
-	}
-	
-}
-
-function usuario_es_encargado(){
-	GLOBAL $Usuario;
-	// var_dump($Usuario);
-	$query = "SELECT u.idpersonal, p.puesto
-		FROM usuarios as u 
-		LEFT JOIN personal as p
-		ON p.id = u.idpersonal
-		WHERE u.nombre = '$Usuario'
-		LIMIT 1";
-	$res = mysql_query($query);
-	while($row = mysql_fetch_assoc($res)){
-		$position = intval($row["puesto"]);
-		//die( var_dump($row["puesto"]));
-		// var_dump($position);
-	}
-	if($position == 68 || $position == 4){
-		return true;
-	}else{
-		return false;
-	}
-	
-}
 
 		
 function build_devs_select($devs,$assigned){
@@ -598,9 +585,6 @@ function makeButton($obj){
 	$labelBack = $statuses[$backStatus];
 
 	
-	if(!$esPersonal && !$esEncargado)return '';
-	if(!$esEncargado && $status > 3)return '';
-	
 	return '<div class="btn-group">
 			
 		  <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -684,47 +668,6 @@ function makeCard_boot4($obj){
 
 //end funciones
 
-$statuses = Array();
-$statuses[0] = "Abiertos";
-$statuses[1] = "Planeaci&oacute;n";
-$statuses[2] = "En Proceso";
-$statuses[3] = "Por Revisar";
-$statuses[4] = "Terminado";
-$statuses[5] = "Finalizado";
-
-//definir prioridades
-$prioritys = Array();
-$prioritys[25] = "Baja";
-$prioritys[50] = "Media";
-$prioritys[75] = "Alta";
-$prioritys[100] = "Urgente";
-
-//definir deptos
-$deptos = Array();
-
-$query = "SELECT id,nombre FROM tickets_adm_deptos ORDER BY nombre";
-$res = mysql_query($query);
-while($row = mysql_fetch_assoc($res)){
-	
-	$deptos[$row["id"]] = $row["nombre"];
-	
-}
-
-//definir personal
-$devs = Array();
-$devs[0] = "Proveedor Externo";
-
-$query = "SELECT id,nombre, apellido FROM personal WHERE puesto='31' OR puesto='32' AND fechafinal='0000-00-00 00:00:00' ORDER BY nombre";
-$res = mysql_query($query);
-while($row = mysql_fetch_assoc($res)){
-	
-	$devs[$row["id"]] = $row["nombre"]." ".$row["apellido"] ;
-	
-}
-
-
-	$esPersonal = true;//usuario_es_personal();//checa si usuario es puesto 31 o 32
-	$esEncargado = true;//usuario_es_encargado();//checa si usuario es puesto 68
 
 ?>
 
@@ -875,10 +818,10 @@ function elimina_depto(id){
 
 function change_status(id,status, allowed = true){
 	
-	if(allowed)
+	//if(allowed)
 	window.open("tickets_adm.php?action=changeStatus&status="+status+"&id="+id,"_self");
-	else
-	alert("Faltan datos");
+	//else
+	//alert("Faltan datos");
 }
 
 function filterDepto(value){
@@ -1001,4 +944,4 @@ function validate_new_ticket(){
 	}
 	
 </script>
-<?php include "demo_footer.php"; ?>
+<?php include "demo_includes/demo_footer.php"; ?>
