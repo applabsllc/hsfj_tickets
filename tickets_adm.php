@@ -52,7 +52,8 @@ if($action == "saveChanges"){
 		//$files = json_decode($row['filesrc']);
 		$files = ( substr($row["filesrc"],0,1)=="[" ? json_decode($row["filesrc"]) : get_empty_files($row["filesrc"]) );
 	}  
-	 
+	
+	if($_FILES)
 	foreach($_FILES['upfile']['name'] as $key=>$file){ 
 		if($file){ 
 			$rand=mt_rand(50, 15000);
@@ -79,7 +80,7 @@ if($action == "saveChanges"){
 	`depto` = '$depto' 
 	WHERE id='$id' LIMIT 1";
 	
-	//die(var_dump($_POST));
+	//die(var_dump($query));
 	
 	$res = mysql_query($query);
 	
@@ -211,6 +212,7 @@ if($action == "saveNew"){
 		'$type', '$title', '0',
 		CURRENT_TIMESTAMP , '$Usuario', '$files', '$desc', '$depto', '$estimatecost', '$finalcost', '$priority', CURRENT_TIMESTAMP)";
 	
+	
 	$res = mysql_query($query);
 
 	die("Grabando... <script>window.open('tickets_adm.php?msg=Creado Exitosamente&message=Creado Exitosamente','_self');</script>");
@@ -273,7 +275,6 @@ if($action == "saveDepto"){
 }
  
 ///end actions////
-
 
 ///// funciones ////
 
@@ -804,9 +805,38 @@ color:#ffffff;
 		  margin: 1px 3px;
 		  cursor: pointer;
 	}
+	.hidden{
+		display: none;
+		visibility: hidden;
+	}
 	
+	#toast-container {
+		
+		z-index: 1055;
+
+	}
+
+#toast-wrapper {
+    position: absolute;
+    bottom: 0;
+    right: 40%;
+}
+
+#toast-container > #toast-wrapper > .toast {
+    min-width: 150px
+}
+
+#toast-container > #toast-wrapper > .toast >.toast-header strong {
+    padding-right: 20px
+}
+
 </style>
 <script>
+
+(function(b){b.toast=function(a,h,g,l,k){b("#toast-container").length||(b("body").prepend('<div id="toast-container" aria-live="polite" aria-atomic="true"></div>'),b("#toast-container").append('<div id="toast-wrapper"></div>'));var c="",d="",e="text-muted",f="",m="object"===typeof a?a.title||"":a||"Notice!";h="object"===typeof a?a.subtitle||"":h||"";g="object"===typeof a?a.content||"":g||"";k="object"===typeof a?a.delay||3E3:k||3E3;switch("object"===typeof a?a.type||"":l||"info"){case "info":c="bg-info";
+f=e=d="text-white";break;case "success":c="bg-success";f=e=d="text-white";break;case "warning":case "warn":c="bg-warning";f=e=d="text-white";break;case "error":case "danger":c="bg-danger",f=e=d="text-white"}a='<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="'+k+'">'+('<div class="toast-header '+c+" "+d+'">')+('<strong class="mr-auto">'+m+"</strong>");a+='<small class="'+e+'">'+h+"</small>";a+='<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">';
+a+='<span aria-hidden="true" class="'+f+'">&times;</span>';a+="</button>";a+="</div>";""!==g&&(a+='<div class="toast-body">',a+=g,a+="</div>");a+="</div>";b("#toast-wrapper").append(a);b("#toast-wrapper .toast:last").toast("show")}})(jQuery);
+
 
 function elimina_depto(id){
 	
@@ -859,14 +889,12 @@ function validate_new_ticket(){
 	<?php
 	if($_GET["message"]){ ?>
 	
-	<center>
-	<div class="alert alert-primary" role="alert" style="width:60%;min-width:300px;max-width:800px;" id="headerAlert">
-	<?=$_GET["message"]?>
-	</div>
-	</center>
-	
-	
-	<script>setTimeout(() => {document.getElementById('headerAlert').className+=" hidden"},3000)</script>
+	<script>jQuery.toast({
+	  title: '<?=$_GET["message"]?>',
+	  type: 'info',
+	  delay: 5000
+	});
+</script>
 	<?php
 	}
 	?>

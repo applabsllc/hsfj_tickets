@@ -27,5 +27,36 @@ if(!mysql_select_db("$db_name"))
 	exit();
 }
 
+//get all post variables
+
+
+if(isset($_POST))
+foreach ($_POST as $var => $value) {
+$nowval= "$$var = '$value';";
+//echo $nowval."<br>";
+eval($nowval);
+
+if(is_array($value)){
+foreach ($value as $var2 => $value2){
+$nowval="$".$var."[".$var2."] = '$value2';";
+//echo $nowval."<br>";
+eval($nowval);}
+}
+} 
+
+if(isset($_GET))
+foreach ($_GET as $var => $value) {
+$nowval="$$var = '$value';";
+//echo $nowval."<br>";
+eval($nowval);
+
+if(is_array($value)){
+foreach ($value as $var2 => $value2){
+$nowval="$".$var."[".$var2."] = '$value2';";
+//echo $nowval."<br>";
+eval($nowval);}
+}
+
+}
 
 ?>
