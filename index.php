@@ -20,7 +20,7 @@ $statuses[0] = "Planeaci&oacute;n";
 $statuses[1] = "Disponibles";
 $statuses[2] = "En Proceso";
 $statuses[3] = "Por Revisar ( PR )";
-$statuses[4] = "Aprobado";
+$statuses[4] = "A Produccion";
 $statuses[5] = "Terminado";
 
 //definir prioridades
@@ -258,8 +258,7 @@ if($action == "saveNotes"){
 }
 
 if($action == "saveDepto"){
-	// var_dump($_GET);
-	// $query = "UPDATE tickets_adm7_deptos SET `status` = '$status' WHERE id='$id' LIMIT 1 ";
+	
 	$query = "INSERT INTO tickets_adm_deptos (
 		`nombre` ,
 		`padre` ,
@@ -404,7 +403,7 @@ function get_abrev($name){
 	
 }
 
-function get_priority($pri){
+function get_priority($pri, $days= null){
 	
 	$pri = intval($pri);
 	$setColor = 1;
@@ -420,7 +419,7 @@ function get_priority($pri){
 	if($pri <= 75 && $pri > 50)$setColor = 2;
 	if($pri > 75)$setColor = 3;
 	
-	return '<div class="circleHolder" style="background:'.$colors[$setColor].';">&nbsp;</div>';
+	return '<div class="circleHolder" style="background:'.$colors[$setColor].';">&nbsp'.$days.'&nbsp;</div>';
 	
 
 }
@@ -429,8 +428,8 @@ function getTicketType($typechar){
 	
 	$imgurl = "";
 	
-	if($typechar == "f" || !$typechar)$imgurl = "request.png";
-	if($typechar == "b")$imgurl = "repair.png";
+	if($typechar == "f" || !$typechar)$imgurl = "gear.png";
+	if($typechar == "b")$imgurl = "bug.png";
 		
 	return "<img src='imagenes/$imgurl ' class='typeIcon'>";
 }
@@ -449,9 +448,9 @@ GLOBAL $devs, $statuses, $deptos, $prioritys;
 $action  = ($obj["id"]?"<input type='hidden' name='id' value='".$obj["id"]."'><input type='hidden' name='action' value='saveChanges'>":"<input type='hidden' name='action' value='saveNew'>");
 
 // $priority = ($obj["id"]?"<tr><td>Prioridad: </td><td><input type='number' name='priority' class='espaciado' style='width:50px;text-align:right;border: 1px solid #c0c0c0;' value='".$obj["priority"]."'> (-100 a 100)</td></tr>":"");
-$estimate = ($obj["id"]?"<tr><td>Estimado: </td><td><input type='number' name='estimate' class='espaciado' step='.5' style='width:50px;text-align:right;border: 1px solid #c0c0c0;' value='".$obj["estimate"]."'> Dias</td></tr>":"");
+$estimate = (true?"<tr><td>Estimado: </td><td><input type='number' name='estimate' class='espaciado' step='.5' style='width:50px;text-align:right;border: 1px solid #c0c0c0;' value='".$obj["estimate"]."'> Dias</td></tr>":"");
 $progress = ($obj["id"]?"<tr><td>Progreso: </td><td><input type='number' name='progress' class='espaciado' step='1' max='100' min='0' style='width:50px;text-align:right;border: 1px solid #c0c0c0;' value='".$obj["progress"]."'> %</td></tr>":"");
-$assigned = ($obj["id"]?"<tr><td>Asignado A: </td><td><select name='assigned' class='espaciado'>".build_devs_select($devs,$obj["assigned"])."</select></td></tr>":"");
+$assigned = (true?"<tr><td>Asignado A: </td><td><select name='assigned' class='espaciado'>".build_devs_select($devs,$obj["assigned"])."</select></td></tr>":"");
 $files = ( substr($obj["filesrc"],0,1)=="[" ? json_decode($obj["filesrc"]) : get_empty_files($obj["filesrc"]) );
 $filesrc = ""; 
 
@@ -487,8 +486,6 @@ $modalContent = "<div style='display:inline-block;width: 45%;'>
 						$estimate
 						$progress
 						$assigned
-						<tr><td>Costo Estimado: </td><td><input type='number' name='estimatecost' class='espaciado' step='1' min='0' style='width:100px;text-align:right;border: 1px solid #c0c0c0;' value=".$obj["estimatecost"]."> $</td></tr>
-						<tr><td>Costo Final: </td><td><input type='number' name='finalcost' class='espaciado' step='1' min='0' style='width:100px;text-align:right;border: 1px solid #c0c0c0;' value=".$obj["finalcost"]."> $</td></tr>
 						$filesrc
 						<tr><td>Descripci&oacute;n: </td><td><textarea name='desc' class='espaciado' style='width: 95%;height:160px;'>".$obj["desc"]."</textarea></td></tr>
 						
@@ -620,11 +617,7 @@ function makeCard_boot4($obj){
 		$days_elapsed = '0';
 	}
 
-	if (($days_elapsed < $obj["estimate"]) || $obj["estimate"] == '0') {
-		$estimateTime = '<div class="circleHolder">'.($obj["estimate"] ? " <b> " .$days_elapsed. " / " . $obj["estimate"]. "</b> " : "n/a").'</div>';
-	} else {
-		$estimateTime = '<div class="dayExceeded">'.($obj["estimate"] ? " <b> " .$days_elapsed. " / " . $obj["estimate"]. "</b> " : "n/a").'</div>';
-	}
+	$estimateTime = '';
 	
 	$progress_div = '<div class="progress" style="margin-top:10px;">
 					  	<div class="progress-bar  bg-info" role="progressbar" style="width: '.$obj["progress"].'%;" aria-valuenow="'.$obj["progress"].'" aria-valuemin="0" aria-valuemax="100">'.($obj["progress"]?$obj["progress"]."%":"").'</div>
@@ -636,7 +629,7 @@ function makeCard_boot4($obj){
 				
 				
 				<table style="width:100%;margin-bottom:5px;"><tr>
-				<td>['.$obj["id"].'] '.$obj["title"].'<br>
+				<td> '.$obj["title"].'<br>
 				<b>'.$obj["depto"].'</b></td>
 				<td align="right" valign="top">
 				'.makeButton($obj).'
@@ -654,7 +647,7 @@ function makeCard_boot4($obj){
 						'.$estimateTime.'
 					</td>
 					<td>
-						'.get_priority($obj["priority"]).'
+						'.get_priority($obj["priority"], $obj["estimate"]).'
 					</td>
 					<td align="right">
 						'.$build_modal_output.'
@@ -844,27 +837,27 @@ function elimina_depto(id){
 	
 	if(id)
 	if(window.confirm("Eliminar Depto. '"+id+"' ?"))
-	window.open("tickets_adm7.php?action=eliminaDepto&id="+id,"_self");
+	window.open("<?=$filepath?>?action=eliminaDepto&id="+id,"_self");
 
 }
 
 function change_status(id,status, allowed = true){
 	
 	//if(allowed)
-	window.open("tickets_adm7.php?action=changeStatus&status="+status+"&id="+id,"_self");
+	window.open("<?=$filepath?>?action=changeStatus&status="+status+"&id="+id,"_self");
 	//else
 	//alert("Faltan datos");
 }
 
 function filterDepto(value){
 	// console.log(value);
-	window.open("tickets_adm7.php?action=filterDepto&value="+value,"_self");
+	window.open("<?=$filepath?>?action=filterDepto&value="+value,"_self");
 	
 }
 
 function filterPers(value){
 	// console.log(value);
-	window.open("tickets_adm7.php?action=filterPers&value="+value,"_self");
+	window.open("<?=$filepath?>?action=filterPers&value="+value,"_self");
 	
 }
 
@@ -906,7 +899,7 @@ function validate_new_ticket(){
 		<?=build_modal("new", "Nuevo Ticket" , "Crear Nuevo Ticket", get_modal_contents() ,"validate_new_ticket();")?>
 	<?php if($esEncargado){ ?>
 		<?=build_modal("newDepto", "Nuevo Depto." , "Crear Nuevo Departamento", get_modal_contents_deptos() ,"document.getElementById('deptoForm').submit();")?>
-		<a href="tickets_adm7_historial.php" ><button type="button" class="btn btn-primary btn-sm">Historial</button></a>
+		<a href="tickets_historial.php" ><button type="button" class="btn btn-primary btn-sm">Historial</button></a>
 		
 
 		
